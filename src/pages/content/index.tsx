@@ -742,6 +742,12 @@ function handleVisibilityChange(): void {
               console.error('[Gemini Voyager] Export init error on DeepSeek:', error);
             });
         }
+
+        // Prevent auto-scroll works platform-independently: the MAIN-world
+        // script overrides native scroll APIs and uses CHAT_SCROLL_SELECTOR
+        // to identify the chat scroll container. DeepSeek's .ds-scroll-area
+        // is already included in that selector list.
+        startPreventAutoScroll();
         // ChatGPT export is driven by PluginHost via the voyager.chatgpt-export
         // builtin plugin (opt-in), not started unconditionally here.
         // Formula copy here is driven by PluginHost via the voyager.formula-copy

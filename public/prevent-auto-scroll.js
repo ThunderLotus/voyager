@@ -13,6 +13,7 @@
     'chat-window',
     'chat-window-content',
     '.conversation-container',
+    '.ds-scroll-area',
   ].join(', ');
   const SIDEBAR_SELECTOR = [
     'bard-sidenav',

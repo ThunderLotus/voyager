@@ -59,7 +59,7 @@
     "lucide-react": "^0.553.0",
     "marked": "16.4.1",
     "marked-katex-extension": "^4",
-    "mermaid": "11.12.2",
+    "mermaid": "10.9.8",
     "mermaid-legacy": "npm:mermaid@9.2.2",
     "onml": "^2.1.0",
     "react": "^19.1.0",
