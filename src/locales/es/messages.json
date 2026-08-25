@@ -1578,6 +1578,14 @@
     "message": "Añade un botón de exportación en la esquina superior derecha cuando la cabecera de Gemini ya no muestra uno. Desactívalo para ocultarlo.",
     "description": "Hint for the persistent export toolbar toggle"
   },
+  "exportScrollPosition": {
+    "message": "Desplazar al final al exportar",
+    "description": "Etiqueta del interruptor para desplazar al mensaje más reciente al exportar"
+  },
+  "exportScrollPositionHint": {
+    "message": "Activado: desplaza al mensaje más reciente al exportar; Desactivado: desplaza al primer mensaje.",
+    "description": "Pista para el interruptor de posición de desplazamiento de exportación"
+  },
   "enableMermaidRendering": {
     "message": "Habilitar renderizado de diagramas Mermaid",
     "description": "Enable Mermaid diagram rendering toggle label"

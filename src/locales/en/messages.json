@@ -1581,6 +1581,14 @@
     "message": "Adds a top-right export button when Gemini's header no longer hosts one. Turn off to hide it.",
     "description": "Hint for the persistent export toolbar toggle"
   },
+  "exportScrollPosition": {
+    "message": "Scroll to latest on export",
+    "description": "Toggle label for scrolling to the latest message when export begins"
+  },
+  "exportScrollPositionHint": {
+    "message": "When enabled, scroll to the latest message during export; when disabled, scroll to the first message.",
+    "description": "Hint for the export scroll position toggle"
+  },
   "enableMermaidRendering": {
     "message": "Enable Mermaid diagram rendering",
     "description": "Enable Mermaid diagram rendering toggle label"

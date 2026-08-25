@@ -1578,6 +1578,14 @@
     "message": "Добавляет кнопку экспорта в правом верхнем углу, когда заголовок Gemini больше её не отображает. Отключите, чтобы скрыть.",
     "description": "Hint for the persistent export toolbar toggle"
   },
+  "exportScrollPosition": {
+    "message": "Прокрутить в конец при экспорте",
+    "description": "Метка переключателя для прокрутки к последнему сообщению при экспорте"
+  },
+  "exportScrollPositionHint": {
+    "message": "Включено: прокрутка к последнему сообщению при экспорте; Выключено: прокрутка к первому сообщению.",
+    "description": "Подсказка для переключателя позиции прокрутки экспорта"
+  },
   "enableMermaidRendering": {
     "message": "Включить рендеринг диаграмм Mermaid",
     "description": "Enable Mermaid diagram rendering toggle label"

@@ -1583,6 +1583,14 @@
     "message": "Ajoute un bouton d'export en haut à droite lorsque l'en-tête de Gemini n'en propose plus. Désactivez pour le masquer.",
     "description": "Hint for the persistent export toolbar toggle"
   },
+  "exportScrollPosition": {
+    "message": "Faire défiler vers la fin lors de l'export",
+    "description": "Étiquette du commutateur pour défiler vers le dernier message lors de l'export"
+  },
+  "exportScrollPositionHint": {
+    "message": "Activé : défile vers le dernier message lors de l'export ; Désactivé : défile vers le premier message.",
+    "description": "Aide pour le commutateur de position de défilement d'export"
+  },
   "enableMermaidRendering": {
     "message": "Activer le rendu Mermaid",
     "description": "Enable Mermaid diagram rendering toggle label"

@@ -279,6 +279,9 @@ export const StorageKeys = {
   // toolbar is suppressed even if the logo is missing — users keep the menu
   // injections (顶栏 ⋮ / per-response ⋮) as their only export entry.
   PERSISTENT_EXPORT_TOOLBAR_ENABLED: 'gvPersistentExportToolbarEnabled',
+  // Where to scroll the conversation when the export message-selection phase
+  // begins. 'top' = first message, 'bottom' = last message. Defaults to 'bottom'.
+  EXPORT_SCROLL_POSITION: 'gvExportScrollPosition',
 
   // AI Studio master toggle
   GV_AISTUDIO_ENABLED: 'gvAIStudioEnabled',

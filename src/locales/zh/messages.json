@@ -1567,6 +1567,14 @@
     "message": "当 Gemini 顶栏不再提供导出入口时，在右上角添加一个导出按钮。关闭即可隐藏。",
     "description": "右上角兜底导出工具栏开关提示"
   },
+  "exportScrollPosition": {
+    "message": "导出时跳到末尾",
+    "description": "导出开始时滚动到最新消息的开关标签"
+  },
+  "exportScrollPositionHint": {
+    "message": "开启时导出滚动到最新会话，关闭时滚动到第一条会话。",
+    "description": "导出滚动位置开关的提示"
+  },
   "enableMermaidRendering": {
     "message": "启用 Mermaid 图表渲染",
     "description": "启用 Mermaid 图表渲染开关标签"

@@ -451,6 +451,10 @@ const POPUP_SETTINGS_SEARCH_ITEMS = [
     'persistentExportToolbar',
     'persistentExportToolbarHint',
   ]),
+  popupSearchTarget('general', 'exportScrollPosition', [
+    'exportScrollPosition',
+    'exportScrollPositionHint',
+  ]),
   popupSearchTarget('general', 'enableMermaidRendering', [
     'enableMermaidRendering',
     'enableMermaidRenderingHint',
@@ -810,6 +814,7 @@ interface SettingsUpdate {
   showMessageTimestamps?: boolean;
   folderProjectEnabled?: boolean;
   persistentExportToolbarEnabled?: boolean;
+  exportScrollPosition?: 'top' | 'bottom';
 }
 
 interface PopupProps {
@@ -1089,6 +1094,7 @@ export default function Popup({ sourceTabId }: PopupProps = {}) {
   const [aiStudioEnabled, setAiStudioEnabled] = useState<boolean>(true);
   const [persistentExportToolbarEnabled, setPersistentExportToolbarEnabled] =
     useState<boolean>(true);
+  const [exportScrollPosition, setExportScrollPosition] = useState<'top' | 'bottom'>('bottom');
   const [activeAccountPlatform, setActiveAccountPlatform] = useState<AccountPlatform>('gemini');
   const [activeUrl, setActiveUrl] = useState<string>('');
   const [activeTabContextLoaded, setActiveTabContextLoaded] = useState(false);
@@ -1468,6 +1474,8 @@ export default function Popup({ sourceTabId }: PopupProps = {}) {
       if (typeof settings.persistentExportToolbarEnabled === 'boolean')
         payload[StorageKeys.PERSISTENT_EXPORT_TOOLBAR_ENABLED] =
           settings.persistentExportToolbarEnabled;
+      if (typeof settings.exportScrollPosition === 'string')
+        payload[StorageKeys.EXPORT_SCROLL_POSITION] = settings.exportScrollPosition;
       void setSyncStorage(payload);
     },
     [activeAccountPlatform, setSyncStorage],
@@ -2021,6 +2029,7 @@ export default function Popup({ sourceTabId }: PopupProps = {}) {
           [StorageKeys.RESPONSE_COMPLETE_NOTIFICATION_ENABLED]: false,
           [StorageKeys.REMOTE_ANNOUNCEMENTS_ENABLED]: true,
           [StorageKeys.PERSISTENT_EXPORT_TOOLBAR_ENABLED]: true,
+          [StorageKeys.EXPORT_SCROLL_POSITION]: 'bottom',
           [StorageKeys.GV_POPUP_SECTION_ORDER]: null,
         },
         (res) => {
@@ -2109,6 +2118,9 @@ export default function Popup({ sourceTabId }: PopupProps = {}) {
           setAiStudioEnabled(res?.[StorageKeys.GV_AISTUDIO_ENABLED] !== false);
           setPersistentExportToolbarEnabled(
             res?.[StorageKeys.PERSISTENT_EXPORT_TOOLBAR_ENABLED] !== false,
+          );
+          setExportScrollPosition(
+            res?.[StorageKeys.EXPORT_SCROLL_POSITION] === 'top' ? 'top' : 'bottom',
           );
 
           // Width enabled flags — auto-enable if user previously customized the width
@@ -4269,6 +4281,32 @@ export default function Popup({ sourceTabId }: PopupProps = {}) {
                     onChange={(e) => {
                       setPersistentExportToolbarEnabled(e.target.checked);
                       apply({ persistentExportToolbarEnabled: e.target.checked });
+                    }}
+                  />
+                </div>,
+              )}
+              {renderSetting(
+                'general',
+                'exportScrollPosition',
+                <div className="group flex items-center justify-between">
+                  <div className="flex-1">
+                    <Label
+                      htmlFor="export-scroll-position"
+                      className="group-hover:text-primary cursor-pointer text-sm font-medium transition-colors"
+                    >
+                      {t('exportScrollPosition')}
+                    </Label>
+                    <p className="text-muted-foreground mt-1 text-xs">
+                      {t('exportScrollPositionHint')}
+                    </p>
+                  </div>
+                  <Switch
+                    id="export-scroll-position"
+                    checked={exportScrollPosition === 'bottom'}
+                    onChange={(e) => {
+                      const value = e.target.checked ? 'bottom' : 'top';
+                      setExportScrollPosition(value);
+                      apply({ exportScrollPosition: value });
                     }}
                   />
                 </div>,

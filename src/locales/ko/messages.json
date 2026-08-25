@@ -1569,6 +1569,14 @@
     "message": "Gemini 헤더에 내보내기 항목이 없을 때 오른쪽 상단에 내보내기 버튼을 표시합니다. 끄면 숨겨집니다.",
     "description": "Hint for the persistent export toolbar toggle"
   },
+  "exportScrollPosition": {
+    "message": "내보낼 때 최신으로 스크롤",
+    "description": "내보내기 시작 시 최신 메시지로 스크롤하는 토글 레이블"
+  },
+  "exportScrollPositionHint": {
+    "message": "켜면 내보내기 시 최신 메시지로 스크롤, 끄면 첫 번째 메시지로 스크롤합니다.",
+    "description": "내보내기 스크롤 위치 토글의 힌트"
+  },
   "enableMermaidRendering": {
     "message": "Mermaid 다이어그램 렌더링 활성화",
     "description": "Enable Mermaid diagram rendering toggle label"

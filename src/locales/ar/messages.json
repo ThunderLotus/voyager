@@ -1572,6 +1572,14 @@
     "message": "يضيف زر تصدير في أعلى اليمين عندما لا يعرض رأس Gemini واحدًا. أوقفه لإخفائه.",
     "description": "Hint for the persistent export toolbar toggle"
   },
+  "exportScrollPosition": {
+    "message": "التمرير إلى النهاية عند التصدير",
+    "description": "تسمية مفتاح التبديل للتمرير إلى أحدث رسالة عند التصدير"
+  },
+  "exportScrollPositionHint": {
+    "message": "عند التفعيل: التمرير إلى أحدث رسالة عند التصدير؛ عند التعطيل: التمرير إلى أول رسالة.",
+    "description": "تلميح لمفتاح تبديل موضع تمرير التصدير"
+  },
   "enableMermaidRendering": {
     "message": "تمكين عرض مخططات Mermaid",
     "description": "Enable Mermaid diagram rendering toggle label"

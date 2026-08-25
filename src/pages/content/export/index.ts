@@ -1033,6 +1033,27 @@ async function scrollToTopAndRender(userSelectors: string[]): Promise<void> {
   const topEl = getTopUserElement(userSelectors);
   if (topEl) {
     topEl.scrollIntoView({ behavior: 'auto', block: 'start' });
+    // Also directly reset the nearest scrollable ancestor in case
+    // scrollIntoView doesn't reach it (e.g. DeepSeek's ds-scroll-area).
+    let scrollParent = topEl.parentElement;
+    while (scrollParent && scrollParent !== document.body) {
+      const style = window.getComputedStyle(scrollParent);
+      if (
+        /(auto|scroll|overlay)/.test(style.overflowY) &&
+        scrollParent.scrollHeight > scrollParent.clientHeight
+      ) {
+        scrollParent.scrollTop = 0;
+        break;
+      }
+      scrollParent = scrollParent.parentElement;
+    }
+  } else {
+    // Fallback: directly scroll the conversation root to the top.
+    const root = getConversationRoot(userSelectors);
+    if (root && root !== document.body) {
+      root.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
   }
   // Give virtual scroll frameworks time to render the newly-visible nodes.
   await new Promise<void>((resolve) => {
@@ -1061,6 +1082,78 @@ async function scrollToTopAndRender(userSelectors: string[]): Promise<void> {
     setTimeout(done, 3000);
     // Kick the idle timer in case no mutations fire at all.
     idleTimer = setTimeout(done, 400);
+  });
+}
+
+function getBottomUserElement(selectors: string[]): HTMLElement | null {
+  const root = getConversationRoot(selectors);
+  const all = filterOutDeepResearchImmersiveNodes(
+    Array.from(root.querySelectorAll<HTMLElement>(selectors.join(','))),
+  );
+  if (!all.length) return null;
+  const topLevel = filterTopLevel(all);
+  return topLevel.length > 0 ? topLevel[topLevel.length - 1] : null;
+}
+
+async function scrollToBottomAndRender(userSelectors: string[]): Promise<void> {
+  const bottomEl = getBottomUserElement(userSelectors);
+  if (bottomEl) {
+    bottomEl.scrollIntoView({ behavior: 'auto', block: 'end' });
+    let scrollParent = bottomEl.parentElement;
+    while (scrollParent && scrollParent !== document.body) {
+      const style = window.getComputedStyle(scrollParent);
+      if (
+        /(auto|scroll|overlay)/.test(style.overflowY) &&
+        scrollParent.scrollHeight > scrollParent.clientHeight
+      ) {
+        scrollParent.scrollTop = scrollParent.scrollHeight;
+        break;
+      }
+      scrollParent = scrollParent.parentElement;
+    }
+  } else {
+    const root = getConversationRoot(userSelectors);
+    if (root && root !== document.body) {
+      root.scrollTop = root.scrollHeight;
+    }
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+  await new Promise<void>((resolve) => {
+    let settled = false;
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      try {
+        obs?.disconnect();
+      } catch {}
+      if (idleTimer != null) clearTimeout(idleTimer);
+      resolve();
+    };
+    const obs = new MutationObserver(() => {
+      if (idleTimer != null) clearTimeout(idleTimer);
+      idleTimer = setTimeout(done, 400);
+    });
+    try {
+      obs.observe(document.body, { childList: true, subtree: true });
+    } catch {
+      done();
+      return;
+    }
+    setTimeout(done, 3000);
+    idleTimer = setTimeout(done, 400);
+  });
+}
+
+async function readExportScrollPosition(): Promise<'top' | 'bottom'> {
+  return new Promise((resolve) => {
+    try {
+      chrome.storage?.sync?.get({ [StorageKeys.EXPORT_SCROLL_POSITION]: 'bottom' }, (result) => {
+        resolve(result[StorageKeys.EXPORT_SCROLL_POSITION] === 'top' ? 'top' : 'bottom');
+      });
+    } catch {
+      resolve('bottom');
+    }
   });
 }
 
@@ -1263,10 +1356,15 @@ async function executeExportSequence(
     });
 
   // Platforms that don't lazy-load history skip the preload loop,
-  // but scroll the conversation to the top first so virtual-scroll
-  // containers render their topmost nodes before we walk the DOM.
+  // but scroll the conversation so virtual-scroll containers render
+  // their boundary nodes before we walk the DOM.
   if (!exportAdapter.shouldPreloadHistory()) {
-    await scrollToTopAndRender(getUserSelectors());
+    const scrollPos = await readExportScrollPosition();
+    if (scrollPos === 'bottom') {
+      await scrollToBottomAndRender(getUserSelectors());
+    } else {
+      await scrollToTopAndRender(getUserSelectors());
+    }
     throwIfExportCancelled(signal);
     await performFinalExport(state, dict, lang);
     return;
@@ -1300,6 +1398,9 @@ async function executeExportSequence(
   if (!topNode) {
     console.log('[Gemini Voyager] No top node found, proceeding to export directly.');
     clearPendingExportState(sessionStorage);
+    if ((await readExportScrollPosition()) === 'bottom') {
+      await scrollToBottomAndRender(getUserSelectors());
+    }
     await performFinalExport(state, dict, lang);
     return;
   }
@@ -1341,6 +1442,9 @@ async function executeExportSequence(
 
   console.log('[Gemini Voyager] No refresh or update detected. Exporting...');
   clearPendingExportState(sessionStorage);
+  if ((await readExportScrollPosition()) === 'bottom') {
+    await scrollToBottomAndRender(getUserSelectors());
+  }
   await performFinalExport(state, dict, lang);
 }
 

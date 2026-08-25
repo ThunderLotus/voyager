@@ -1575,6 +1575,14 @@
     "message": "Gemini のヘッダーにエクスポート項目が表示されないとき、右上にエクスポートボタンを表示します。オフで非表示。",
     "description": "Hint for the persistent export toolbar toggle"
   },
+  "exportScrollPosition": {
+    "message": "エクスポート時に最新へスクロール",
+    "description": "エクスポート開始時に最新メッセージへスクロールするトグルのラベル"
+  },
+  "exportScrollPositionHint": {
+    "message": "オンにするとエクスポート時に最新メッセージへスクロール、オフにすると最初のメッセージへスクロールします。",
+    "description": "エクスポートスクロール位置トグルのヒント"
+  },
   "enableMermaidRendering": {
     "message": "Mermaid 図表のレンダリング",
     "description": "Enable Mermaid diagram rendering toggle label"
