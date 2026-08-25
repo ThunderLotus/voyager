@@ -5,6 +5,9 @@ const CHAT_INPUT_SELECTORS = [
   'div[contenteditable="true"][role="textbox"]',
   '.input-area textarea',
   'textarea[placeholder*="Ask"]',
+  'div[class*="chat-input"] textarea',
+  'textarea[placeholder*="问"]',
+  'textarea[placeholder*="Message"]',
   'textarea',
 ] as const;
 

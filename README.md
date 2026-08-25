@@ -8,6 +8,7 @@
     <li>2. Gemini Mermaid rendering downgraded 11.12.2 → 10.9.8, fixes render() "Cannot destructure property 'diagram'" — Gemini Mermaid 渲染降级 11.12.2 → 10.9.8，修复 render() "Cannot destructure property 'diagram'"</li>
     <li>3. Export scroll position setting (top/bottom, default: bottom) — 导出时跳转位置设置（首/末，默认：末）</li>
     <li>4. Prevent auto-scroll and export scroll fallback for DeepSeek — DeepSeek 防自动跳转与导出滚动兜底修复</li>
+    <li>5. Quote Reply enabled on DeepSeek with selector fallbacks — DeepSeek 启用引用回复（含选择器兜底）</li>
   </p>
 
   <p>

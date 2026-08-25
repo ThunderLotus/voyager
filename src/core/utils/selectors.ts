@@ -22,6 +22,10 @@ export function getUserTurnSelectors(): string[] {
     'article[data-turn="user"]',
     '[data-message-author-role="user"]',
     'div[role="listitem"][data-user="true"]',
+    // DeepSeek
+    '.ds-message',
+    '.ds-user-message',
+    '[data-role="user"]',
   ];
 }
 
@@ -44,6 +48,10 @@ export function getAssistantTurnSelectors(): string[] {
     '.response-container',
     '.presented-response-container',
     'div[role="listitem"]:not([data-user="true"])',
+    // DeepSeek
+    '.ds-assistant-message-main-content',
+    '.ds-markdown',
+    '[data-role="assistant"]',
   ];
 }
 

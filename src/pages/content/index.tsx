@@ -748,6 +748,45 @@ function handleVisibilityChange(): void {
         // to identify the chat scroll container. DeepSeek's .ds-scroll-area
         // is already included in that selector list.
         startPreventAutoScroll();
+
+        // Quote Reply — same storage-driven startup as Gemini, wrapped in an
+        // async IIFE because this plugin-platform branch is not itself async.
+        void (async () => {
+          const quoteReplyResult = await new Promise<Record<string, unknown>>((resolve) => {
+            const defaults = {
+              [StorageKeys.QUOTE_REPLY_ENABLED]: true,
+              [StorageKeys.HIGHLIGHT_ENABLED]: false,
+              [StorageKeys.HIGHLIGHT_DEFAULT_COLOR]: 'yellow',
+              [StorageKeys.HIGHLIGHT_COLOR_PALETTE]: null,
+              [StorageKeys.HIGHLIGHT_TIMELINE_MARKERS_ENABLED]: true,
+            };
+            try {
+              chrome.storage?.sync?.get(defaults, resolve);
+            } catch {
+              resolve(defaults);
+            }
+          });
+          const storedHighlightColor = quoteReplyResult[StorageKeys.HIGHLIGHT_DEFAULT_COLOR];
+          cleanupManager.registerCleanupFunction(
+            startQuoteReply({
+              quoteEnabled: quoteReplyResult[StorageKeys.QUOTE_REPLY_ENABLED] !== false,
+              highlightEnabled: quoteReplyResult[StorageKeys.HIGHLIGHT_ENABLED] === true,
+              highlightDefaultColor: isHighlightColor(storedHighlightColor)
+                ? storedHighlightColor
+                : 'yellow',
+              highlightColorPalette: normalizeHighlightColorPalette(
+                quoteReplyResult[StorageKeys.HIGHLIGHT_COLOR_PALETTE],
+                storedHighlightColor,
+              ),
+              highlightTimelineMarkersEnabled:
+                quoteReplyResult[StorageKeys.HIGHLIGHT_TIMELINE_MARKERS_ENABLED] !== false,
+            }),
+            CleanupPositions.CleanupQuoteReply,
+          );
+        })().catch((error) => {
+          console.error('[Gemini Voyager] Quote Reply init error on plugin platform:', error);
+        });
+
         // ChatGPT export is driven by PluginHost via the voyager.chatgpt-export
         // builtin plugin (opt-in), not started unconditionally here.
         // Formula copy here is driven by PluginHost via the voyager.formula-copy
