@@ -3,6 +3,7 @@
   <h3>Make Your AI Experience Truly Yours ✨</h3>
   <p>
     <b>Gemini · Claude · ChatGPT — finally, complete.</b>
+    <li>chat.deepseek.com export markdown done </li>
   </p>
 
   <p>

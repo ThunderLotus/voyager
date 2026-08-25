@@ -15,6 +15,10 @@ import {
   activateClaudeTimeline,
   updateClaudeTimelineSettings,
 } from '@/features/plugins/builtin/claudeTimeline';
+import {
+  startDeepSeekExportPlugin,
+  stopDeepSeekExportPlugin,
+} from '@/features/plugins/builtin/deepseekExport/runtime';
 import { activateInputVimPlugin } from '@/features/plugins/builtin/inputVim';
 import {
   type NativeHandler,
@@ -36,6 +40,10 @@ export const NATIVE_HANDLER_BINDINGS: Readonly<Record<string, NativeHandler>> = 
   'voyager.chatgpt-export': {
     start: startChatGptExportPlugin,
     stop: stopChatGptExportPlugin,
+  },
+  'voyager.deepseek-export': {
+    start: startDeepSeekExportPlugin,
+    stop: stopDeepSeekExportPlugin,
   },
   'voyager.chatgpt-temporary-handoff': {
     activate: activateChatGptTemporaryHandoff,

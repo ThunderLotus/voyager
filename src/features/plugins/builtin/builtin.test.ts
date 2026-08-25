@@ -46,6 +46,14 @@ describe('BUILTIN_PLUGINS', () => {
     expect(exportPlugin?.contributes.domOps ?? []).toEqual([]);
     expect(exportPlugin?.i18n?.zh?.name).toBe('ChatGPT · 对话导出');
   });
+  it('includes the DeepSeek export native function plugin scoped to DeepSeek', () => {
+    const exportPlugin = BUILTIN_PLUGINS.find((m) => m.id === 'voyager.deepseek-export');
+    expect(exportPlugin).toBeDefined();
+    expect(exportPlugin?.matches).toEqual(['https://chat.deepseek.com/*']);
+    expect(exportPlugin?.contributes.styles ?? []).toEqual([]);
+    expect(exportPlugin?.contributes.domOps ?? []).toEqual([]);
+    expect(exportPlugin?.i18n?.zh?.name).toBe('DeepSeek · 对话导出');
+  });
 
   it('keeps temporary-chat handoff separate from conversation export', () => {
     const handoff = BUILTIN_PLUGINS.find(

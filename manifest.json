@@ -55,7 +55,8 @@
         "https://gemini.google.com/*",
         "https://business.gemini.google/*",
         "https://aistudio.google.com/*",
-        "https://aistudio.google.cn/*"
+        "https://aistudio.google.cn/*",
+        "https://chat.deepseek.com/*"
       ],
       "js": ["src/pages/content/index.tsx"],
       "css": ["contentStyle.css"]

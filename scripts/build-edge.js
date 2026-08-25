@@ -6,6 +6,7 @@
  */
 import { execSync } from 'child_process';
 import fs from 'fs';
+import JSZip from 'jszip';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -77,13 +78,26 @@ async function buildForEdge() {
     if (fs.existsSync(zipPath)) {
       fs.unlinkSync(zipPath);
     }
-
-    // Zip the *contents* of dist_edge
-    execSync(`zip -r "${zipPath}" .`, {
-      cwd: distDir,
-      stdio: 'inherit',
+    const zip = new JSZip();
+    function addFiles(currentDir, relativePath = '') {
+      const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(currentDir, entry.name);
+        const entryRelPath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) {
+          addFiles(fullPath, entryRelPath);
+        } else {
+          zip.file(entryRelPath, fs.readFileSync(fullPath));
+        }
+      }
+    }
+    addFiles(distDir);
+    const buffer = await zip.generateAsync({
+      type: 'nodebuffer',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 9 },
     });
-
+    fs.writeFileSync(zipPath, buffer);
     console.log(`✨ Successfully created: ${zipName}`);
   } catch (error) {
     console.error('❌ Zipping failed:', error.message);

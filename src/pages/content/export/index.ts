@@ -562,6 +562,10 @@ export function collectChatPairs(): ChatTurn[] {
         const pick =
           queryOutsideThoughts<HTMLElement>(aEl, 'message-content') ||
           queryOutsideThoughts<HTMLElement>(aEl, '.markdown, .markdown-main-panel') ||
+          queryOutsideThoughts<HTMLElement>(
+            aEl,
+            '.ds-markdown.ds-assistant-message-main-content',
+          ) ||
           (aEl.closest('.presented-response-container') as HTMLElement | null) ||
           queryOutsideThoughts<HTMLElement>(
             aEl,
@@ -1389,6 +1393,8 @@ async function performFinalExport(
   throwIfExportCancelled(signal);
   await captureGeneratedUiScreenshots();
   throwIfExportCancelled(signal);
+  await exportAdapter.prepareForExport?.(signal);
+  throwIfExportCancelled(signal);
 
   const pairs = collectChatPairs();
   const messages = resolveSelectionMessages(pairs);
@@ -1802,6 +1808,8 @@ async function performFinalExport(
       // Cleanup before capture/export so selection UI is not included in screenshots.
       finishUi();
       await captureGeneratedUiScreenshots();
+      throwIfExportCancelled(signal);
+      await exportAdapter.prepareForExport?.(signal);
       throwIfExportCancelled(signal);
 
       const buildTurnsForSelection = exportAdapter.buildTurnsForSelection;
@@ -2403,25 +2411,52 @@ export async function startExportButton(
 ): Promise<() => void> {
   const noCleanup = () => {};
   if (options.signal?.aborted) return noCleanup;
+  const siteId = exportAdapter.site.id;
+  const isNonGeminiPlatform = !exportAdapter.shouldPreloadHistory();
+  console.info('[Gemini Voyager] startExportButton invoked', {
+    siteId,
+    isNonGeminiPlatform,
+    href: location.href,
+  });
   // Check for pending export immediately
   if (exportAdapter.shouldPreloadHistory()) {
     checkPendingExport();
   }
 
-  const dict = await loadDictionaries();
+  let dict: Record<AppLanguage, Record<string, string>>;
+  try {
+    dict = await loadDictionaries();
+  } catch (err) {
+    console.error('[Gemini Voyager] loadDictionaries failed', err);
+    dict = { en: {} } as Record<AppLanguage, Record<string, string>>;
+  }
   if (options.signal?.aborted) return noCleanup;
   let lang = await getLanguage();
   if (options.signal?.aborted) return noCleanup;
   const t = (key: TranslationKey) => dict[lang]?.[key] ?? dict.en?.[key] ?? key;
 
   // Platforms without Gemini's logo/menu UI: mount the persistent toolbar directly.
-  if (!exportAdapter.shouldPreloadHistory()) {
-    const toolbarHandle = mountPersistentExportToolbar({
+  if (isNonGeminiPlatform) {
+    console.info('[Gemini Voyager] Mounting persistent export toolbar', {
+      siteId,
       label: t('pm_export'),
-      tooltip: t('exportChatJson'),
-      onClick: () => void showExportDialog(dict, lang, { signal: options.signal }),
     });
-    toolbarHandle.root.setAttribute('data-gv-platform', exportAdapter.site.id);
+    let toolbarHandle: ReturnType<typeof mountPersistentExportToolbar>;
+    try {
+      toolbarHandle = mountPersistentExportToolbar({
+        label: t('pm_export'),
+        tooltip: t('exportChatJson'),
+        onClick: () => void showExportDialog(dict, lang, { signal: options.signal }),
+      });
+    } catch (err) {
+      console.error('[Gemini Voyager] mountPersistentExportToolbar failed', err);
+      return noCleanup;
+    }
+    toolbarHandle.root.setAttribute('data-gv-platform', siteId);
+    console.info('[Gemini Voyager] Persistent export toolbar mounted successfully', {
+      siteId,
+      inDocument: document.body.contains(toolbarHandle.root),
+    });
     const onStorageChange = (
       changes: Record<string, chrome.storage.StorageChange>,
       area: string,

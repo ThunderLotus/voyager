@@ -10,6 +10,7 @@ import type { SiteAdapter } from '@/features/plugins/types';
 
 import { buildChatGptAdapter } from './platform/chatgpt';
 import type { ExportPlatformAdapter } from './platform/contract';
+import { buildDeepSeekAdapter } from './platform/deepseek';
 import { buildGeminiAdapter } from './platform/gemini';
 
 export type { ExportPlatformAdapter } from './platform/contract';
@@ -18,12 +19,19 @@ export {
   chatgptExtractInlineFormula,
   chatgptExtractUserText,
 } from './platform/chatgpt';
+export {
+  deepseekExtractCodeBlock,
+  deepseekExtractFormula,
+  deepseekExtractInlineFormula,
+  deepseekExtractUserText,
+} from './platform/deepseek';
 
 type ExportAdapterFactory = (site: SiteAdapter) => ExportPlatformAdapter;
 
 const EXPORT_ADAPTER_FACTORIES: ReadonlyMap<string, ExportAdapterFactory> = new Map([
   ['gemini', buildGeminiAdapter],
   ['chatgpt', buildChatGptAdapter],
+  ['deepseek', buildDeepSeekAdapter],
 ]);
 
 const siteRegistry = SiteRegistry.createDefault();

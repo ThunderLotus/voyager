@@ -253,6 +253,60 @@ export const BUILTIN_PLUGINS: readonly PluginManifest[] = [
     contributes: {},
   },
   {
+    id: 'voyager.deepseek-export',
+    name: 'DeepSeek · Conversation Export',
+    version: '1.0.0',
+    description: 'Export the current DeepSeek conversation as Markdown, JSON, PDF, or an image.',
+    i18n: {
+      zh: {
+        name: 'DeepSeek · 对话导出',
+        description: '将当前 DeepSeek 对话导出为 Markdown、JSON、PDF 或图片。',
+      },
+      zh_TW: {
+        name: 'DeepSeek · 對話匯出',
+        description: '將目前 DeepSeek 對话匯出為 Markdown、JSON、PDF 或圖片。',
+      },
+      ja: {
+        name: 'DeepSeek · 会話エクスポート',
+        description:
+          '現在の DeepSeek 会話を Markdown、JSON、PDF、または画像としてエクスポートします。',
+      },
+      ko: {
+        name: 'DeepSeek · 대화 내보내기',
+        description: '현재 DeepSeek 대화를 Markdown, JSON, PDF 또는 이미지로 내보냅니다.',
+      },
+      fr: {
+        name: 'DeepSeek · Export de conversation',
+        description:
+          'Exporte la conversation DeepSeek actuelle au format Markdown, JSON, PDF ou image.',
+      },
+      es: {
+        name: 'DeepSeek · Exportar conversación',
+        description:
+          'Exporta la conversación actual de DeepSeek como Markdown, JSON, PDF o imagen.',
+      },
+      pt: {
+        name: 'DeepSeek · Exportar conversa',
+        description: 'Exporte a conversa atual do DeepSeek como Markdown, JSON, PDF ou imagem.',
+      },
+      ru: {
+        name: 'DeepSeek · Экспорт диалога',
+        description: 'Экспортирует текущий диалог DeepSeek в Markdown, JSON, PDF или изображение.',
+      },
+      ar: {
+        name: 'DeepSeek · تصدير المحادثة',
+        description: 'يصدّر محادثة DeepSeek الحالية بصيغة Markdown أو JSON أو PDF أو صورة.',
+      },
+    },
+    author: 'voyager-official',
+    category: 'productivity',
+    license: 'GPL-3.0-or-later',
+    engine: '>=1.2.0',
+    tier: 'declarative',
+    matches: ['https://chat.deepseek.com/*'],
+    contributes: {},
+  },
+  {
     id: 'voyager.chatgpt-temporary-handoff',
     name: 'ChatGPT · Temporary Chat Handoff',
     version: '1.0.0',

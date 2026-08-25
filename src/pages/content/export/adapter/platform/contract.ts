@@ -56,6 +56,10 @@ export interface ExportPlatformAdapter {
     htmlParts: string[],
     textParts: string[],
   ) => boolean | undefined;
+  stripCollapsedNoise?: (root: HTMLElement) => void;
+
+  /** Optional async hook invoked before DOM extraction begins. */
+  prepareForExport?: (signal?: AbortSignal) => Promise<void>;
 
   collectTurnContainers?: () => ChatGptTurnContainer[];
   buildTurnsForSelection?: (

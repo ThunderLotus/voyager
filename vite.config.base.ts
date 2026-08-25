@@ -48,6 +48,11 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@': resolve(__dirname, 'src'),
+      '@src': resolve(__dirname, 'src'),
+      '@assets': resolve(__dirname, 'src/assets'),
+      '@locales': resolve(__dirname, 'src/locales'),
+      '@pages': resolve(__dirname, 'src/pages'),
       // The public WaveDrom entrypoint eagerly bundles its browser editor,
       // including an eval-based parser that this renderer never calls. Import
       // only the pinned package's render primitive so extension artifacts stay

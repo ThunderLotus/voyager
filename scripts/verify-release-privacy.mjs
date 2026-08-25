@@ -40,8 +40,9 @@ const files = [];
 const symlinks = [];
 
 function isExpectedEmbeddedProfile(path) {
+  const normalized = path.replace(/\\/g, '/');
   return /\.app\/Contents\/(?:PlugIns\/[^/]+\.appex\/Contents\/)?embedded\.provisionprofile$/.test(
-    path,
+    normalized,
   );
 }
 

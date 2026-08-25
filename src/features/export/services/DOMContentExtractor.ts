@@ -122,9 +122,9 @@ export class DOMContentExtractor {
     const attachments = this.extractUserAttachments(element);
     result.attachments = attachments;
 
-    // Extract user message text. Each platform exposes its own DOM shape
-    // (Gemini's .query-text-line paragraphs vs. ChatGPT's plain text node),
-    // so the actual extraction strategy is delegated to the platform adapter.
+    // Some platforms render UI-only toggles ("已思考… / 收起") inline that must
+    // never reach exported text; let the adapter delete them before extraction.
+    this.exportAdapter.stripCollapsedNoise?.(element);
     const textLines = element.querySelectorAll<HTMLElement>('.query-text-line');
     const textParts: string[] = [];
     this.exportAdapter.extractUserText(textLines, textParts, element);
@@ -197,7 +197,7 @@ export class DOMContentExtractor {
     let messageContent = queryOutsideThoughts(element, 'message-content');
 
     if (!messageContent) {
-      // Try markdown container
+      // Try markdown container (Gemini only; DeepSeek is handled by recursion)
       messageContent = queryOutsideThoughts(
         element,
         '.markdown-main-panel, ' + '.markdown, ' + '.model-response-text',
@@ -227,6 +227,8 @@ export class DOMContentExtractor {
         messageContent.className,
       );
 
+    this.exportAdapter.stripCollapsedNoise?.(messageContent as HTMLElement);
+
     // Don't clone! Angular custom elements may lose content when cloned
     // Instead, skip model-thoughts during processNodes
     const htmlParts: string[] = [];
@@ -235,6 +237,9 @@ export class DOMContentExtractor {
 
     // STRATEGY CHANGE: Instead of recursing through DOM (which misses Angular-rendered elements),
     // process the .markdown div directly and then search for response-elements
+    // Note: DeepSeek has TWO .ds-markdown divs (R1 thinking + main content), so we
+    // can't use the markdownDiv shortcut for DeepSeek. Instead, processNodes recurses
+    // through the outer container and handles each child individually.
     const markdownDiv = messageContent.querySelector('.markdown, .markdown-main-panel');
 
     if (this.DEBUG) {
@@ -328,6 +333,23 @@ export class DOMContentExtractor {
     });
     // Note: tables and code-blocks were already processed via processNodes()
 
+    // DeepSeek: process any .md-code-block elements that processNodes didn't
+    // reach (e.g. Mermaid SVG blocks without <pre> source).  The per-platform
+    // adapter handles extraction; we just find unprocessed elements here.
+    const unprocessedCodeBlocks = Array.from(
+      messageContent.querySelectorAll('.md-code-block'),
+    ).filter((el) => !(el as Element & { processedByGV?: boolean }).processedByGV);
+    unprocessedCodeBlocks.forEach((block) => {
+      this.exportAdapter.extractCodeBlock(
+        block,
+        htmlParts,
+        textParts,
+        result,
+        block.tagName.toLowerCase(),
+        this.DEBUG,
+      );
+    });
+
     // YouTube covers not reached by processNodes (e.g. attachment areas rendered
     // outside the markdown container). Deduped via the processedByGV marker.
     this.processYouTubeCovers(messageContent, htmlParts, textParts, result);
@@ -338,6 +360,7 @@ export class DOMContentExtractor {
       .join('')
       .replace(/\n{3,}/g, '\n\n') // Max 2 consecutive newlines
       .trim();
+
     // Last-chance fallback: if no structured text captured, use plain innerText
     if (!combinedText) {
       const fallbackContainer =
@@ -455,6 +478,7 @@ export class DOMContentExtractor {
 
     for (const child of children) {
       const tagName = child.tagName.toLowerCase();
+
       if (this.DEBUG)
         console.log('[DOMContentExtractor] Processing child:', tagName, child.className);
 
@@ -525,12 +549,11 @@ export class DOMContentExtractor {
 
       // Table block (check for nested table-block first)
       const tableBlock = child.querySelector('table-block');
-      if (
-        tagName === 'table' ||
-        tagName === 'table-block' ||
-        tableBlock ||
-        child.querySelector('table')
-      ) {
+      // Only treat the child as a table when it IS a table/table-block or
+      // directly wraps one via table-block.  Avoid child.querySelector('table')
+      // which would match large content containers (e.g. DeepSeek .ds-markdown)
+      // that merely have a table somewhere among many other children.
+      if (tagName === 'table' || tagName === 'table-block' || tableBlock) {
         if (this.DEBUG) console.log('[DOMContentExtractor] Found table block!');
         const elementToExtract = (tableBlock || child) as HTMLElement;
         const tableContent = this.extractTable(elementToExtract);
@@ -567,8 +590,8 @@ export class DOMContentExtractor {
         continue;
       }
 
-      // Paragraph with possible inline formulas
-      if (tagName === 'p') {
+      // Paragraph with possible inline formulas (also DeepSeek's .ds-markdown-paragraph)
+      if (tagName === 'p' || child.classList.contains('ds-markdown-paragraph')) {
         const processed = this.processInlineContent(child as HTMLElement);
         if (processed.hasFormulas) flags.hasFormulas = true;
         htmlParts.push(`<p>${processed.html}</p>`);
@@ -580,6 +603,7 @@ export class DOMContentExtractor {
       if (/^h[1-6]$/.test(tagName)) {
         const text = this.extractTextWithInlineFormulas(child as HTMLElement);
         const level = tagName[1];
+
         htmlParts.push(`<h${level}>${text.html}</h${level}>`);
         textParts.push(`\n${'#'.repeat(parseInt(level))} ${text.text}\n`);
         continue;
@@ -613,7 +637,11 @@ export class DOMContentExtractor {
       // Generic containers: recurse if the element has child elements,
       // regardless of tag name. This handles custom elements from any platform
       // (e.g. Claude's response containers) without needing a whitelist.
-      if (child.children.length > 0) {
+      // Skip DeepSeek .md-code-block — handled by extractCodeBlock adapter.
+      if (
+        child.children.length > 0 &&
+        !(typeof child.className === 'string' && child.className.includes('md-code-block'))
+      ) {
         if (this.DEBUG)
           console.log('[DOMContentExtractor] Recursing into container:', tagName, child.className);
         const hasDirectText = Array.from(child.childNodes).some(
@@ -877,6 +905,13 @@ export class DOMContentExtractor {
             const mdAlt = alt.replace(/\]/g, '\\]');
             textParts.push(`![${mdAlt}](${src})`);
           }
+          return;
+        }
+
+        // Line break
+        if (el.tagName === 'BR') {
+          htmlParts.push('<br />');
+          textParts.push('\n');
           return;
         }
 
@@ -1278,7 +1313,31 @@ export class DOMContentExtractor {
     let hasFormulas = false;
     let hasCode = false;
     items.forEach((item, index) => {
-      const prefix = isOrdered ? `${orderedStart + index}. ` : '- ';
+      // Detect task-list checkboxes (DeepSeek uses ☑/□ Unicode, Gemini uses
+      // <input type="checkbox"> or role="checkbox").  Convert to Markdown
+      // task list syntax: - [x] / - [ ].
+      let taskCheckbox = '';
+      if (!isOrdered) {
+        const checkboxInput = item.querySelector('input[type="checkbox"], [role="checkbox"]');
+        if (checkboxInput) {
+          const checked =
+            (checkboxInput as HTMLInputElement).checked ||
+            checkboxInput.getAttribute('aria-checked') === 'true';
+          taskCheckbox = checked ? '[x] ' : '[ ] ';
+        } else {
+          const itemText = item.textContent || '';
+          if (/^\s*[☑✓✔×x]\s/.test(itemText)) {
+            taskCheckbox = '[x] ';
+          } else if (/^\s*[□○○]\s/.test(itemText)) {
+            taskCheckbox = '[ ] ';
+          }
+        }
+      }
+      const prefix = isOrdered
+        ? `${orderedStart + index}. `
+        : taskCheckbox
+          ? `- ${taskCheckbox}`
+          : '- ';
       const continuationIndent = indent + ' '.repeat(prefix.length);
       let hasItemContent = false;
       let proseNodes: Node[] = [];
@@ -1299,7 +1358,12 @@ export class DOMContentExtractor {
 
         const processed = this.processInlineContent(proseContainer);
         if (processed.hasFormulas) hasFormulas = true;
-        const prose = this.normalizeText(processed.text || proseContainer.textContent || '');
+        let prose = this.normalizeText(processed.text || proseContainer.textContent || '');
+        // Strip leading checkbox glyph (☑/□/✓/✔/○) already represented by
+        // the Markdown task-list marker.
+        if (taskCheckbox) {
+          prose = prose.replace(/^[☑✓✔×x□○]\s*/, '');
+        }
         if (!prose) return;
 
         textLines.push((hasItemContent ? continuationIndent : indent + prefix) + prose);

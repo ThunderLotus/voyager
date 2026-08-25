@@ -710,21 +710,24 @@ function handleVisibilityChange(): void {
       // Vim are driven exclusively by PluginHost. Do NOT start Gemini-specific
       // features (folders, timeline, export, width adjusters, …) here. We set
       // `initialized` so the visibilitychange handler doesn't later fall into
+      // DeepSeek is the only plugin platform with a full first-party export»
       // initializeFeatures() (which is Gemini/AI-Studio/custom-site shaped).
       if (pluginPlatformId) {
-        initialized = true;
-        if (isPluginSubframe) return;
-        console.log('[Gemini Voyager] Plugin platform: prompt manager');
-        void startPromptManager()
-          .then((instance) => {
-            cleanupManager.registerCleanupFunction(
-              () => instance.destroy(),
-              CleanupPositions.DestroyPromptManagerInstance,
-            );
-          })
-          .catch((error) => {
-            console.error('[Gemini Voyager] Prompt Manager init error on plugin platform:', error);
-          });
+        // DeepSeek is the only plugin platform with a full first-party export
+        // DeepSeek is the only plugin platform with a full first-party export
+        // adapter (buildDeepSeekAdapter). Mount its export entry point here —
+        // startExportButton() branches to mountPersistentExportToolbar when
+        // shouldPreloadHistory() === false, so no Gemini menu/logo is needed.
+        // Other platform features (folders, timeline, …) stay Gemini-only.
+        if (pluginPlatformId === 'deepseek') {
+          void startExportButton()
+            .then((cleanup) => {
+              cleanupManager.registerCleanupFunction(cleanup, 0);
+            })
+            .catch((error) => {
+              console.error('[Gemini Voyager] Export init error on DeepSeek:', error);
+            });
+        }
         // ChatGPT export is driven by PluginHost via the voyager.chatgpt-export
         // builtin plugin (opt-in), not started unconditionally here.
         // Formula copy here is driven by PluginHost via the voyager.formula-copy
