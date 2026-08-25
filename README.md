@@ -3,7 +3,11 @@
   <h3>Make Your AI Experience Truly Yours ✨</h3>
   <p>
     <b>Gemini · Claude · ChatGPT — finally, complete.</b>
-    <li>chat.deepseek.com export markdown done </li>
+    Local modifications / 本地修改：
+    <li>1. DeepSeek (chat.deepseek.com) Markdown export — DeepSeek (chat.deepseek.com) Markdown 导出</li>
+    <li>2. Gemini Mermaid rendering downgraded 11.12.2 → 10.9.8, fixes render() "Cannot destructure property 'diagram'" — Gemini Mermaid 渲染降级 11.12.2 → 10.9.8，修复 render() "Cannot destructure property 'diagram'"</li>
+    <li>3. Export scroll position setting (top/bottom, default: bottom) — 导出时跳转位置设置（首/末，默认：末）</li>
+    <li>4. Prevent auto-scroll and export scroll fallback for DeepSeek — DeepSeek 防自动跳转与导出滚动兜底修复</li>
   </p>
 
   <p>
