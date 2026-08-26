@@ -412,9 +412,19 @@ export function deepseekExtractCodeBlock(
       language = 'mermaid';
     } else {
       // DeepSeek concatenates language name with button labels without
-      // separators (e.g. "htmlcopydownloadrun").  Truncate at the first
-      // known button keyword to recover the real language.
-      const buttonKeywords = ['copy', 'download', 'run', 'fullscreen'];
+      // separators (e.g. "htmlcopydownloadrun" or "python复制下载").
+      // Truncate at the first known button keyword to recover the real
+      // language.  Include Chinese labels for localized UIs.
+      const buttonKeywords = [
+        'copy',
+        'download',
+        'run',
+        'fullscreen',
+        '复制',
+        '下载',
+        '运行',
+        '全屏',
+      ];
       let langEnd = bannerText.length;
       for (const keyword of buttonKeywords) {
         const idx = bannerText.toLowerCase().indexOf(keyword);
