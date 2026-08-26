@@ -208,7 +208,9 @@ export class DOMContentExtractor {
     if (!messageContent) {
       if (
         element.classList.contains('markdown') ||
-        element.tagName.toLowerCase() === 'message-content'
+        element.tagName.toLowerCase() === 'message-content' ||
+        element.classList.contains('ds-markdown') ||
+        element.classList.contains('ds-assistant-message-main-content')
       ) {
         messageContent = element;
       }
