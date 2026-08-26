@@ -53,11 +53,20 @@ function resolveRoot(userSelectors: string[], doc: Document = document): HTMLEle
 }
 
 function extractUserImage(element: HTMLElement): NodeListOf<HTMLImageElement> {
-  return element.querySelectorAll('img');
+  return element.querySelectorAll('img:not([aria-hidden="true"])');
 }
 
 function getUserAttachmentCandidates(element: HTMLElement): HTMLElement[] | undefined {
-  return Array.from(element.querySelectorAll<HTMLElement>('[role="group"][aria-label]'));
+  const groups = Array.from(element.querySelectorAll<HTMLElement>('[role="group"][aria-label]'));
+  return groups.filter((group) => {
+    const label = group.getAttribute('aria-label');
+    if (!label) return false;
+    const button = group.querySelector('button[aria-label]');
+    if (button && button.getAttribute('aria-label') === label) return true;
+    if (group.querySelector('img:not([aria-hidden="true"])')) return true;
+    if (group.querySelector('[class*="file"], [class*="upload"]')) return true;
+    return false;
+  });
 }
 
 const USER_TEXT_BLOCK_TAGS = new Set([
