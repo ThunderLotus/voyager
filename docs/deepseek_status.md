@@ -232,3 +232,61 @@ AI 对话中经常需要针对回答的某个具体片段做引用跟进，手�
 | LaTeX 处理适配（DeepSeek 数学公式 DOM 结构可能不同）（Adapt LaTeX handling (DeepSeek math formula DOM may differ)）          | 中（Medium）     |
 
 ---
+
+## Input Collapse 功能分析（Input Collapse Feature Analysis）
+
+DeepSeek - 不需要(Not Needed)
+
+**1. 它是什么（What It Is）**
+输入框失焦且为空时，自动折叠成 48px 高的药丸占位符（"给 AI 发消息"），释放垂直空间给对话阅读区。需要输入时点击药丸或按快捷键展开恢复。（When the input box loses focus and is empty, it automatically collapses into a 48px-tall pill placeholder ("Message AI"), freeing vertical space for the conversation reading area. Click the pill or press a shortcut to expand and restore when input is needed.）
+
+**2. 在 Gemini 中的体验（Experience in Gemini）**
+
+| 状态（Status）              | 视觉（Visual）                                                                                                                    | 触发方式（Trigger）                                                                                                |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 折叠（Collapsed）           | 48px 高药丸，居中，圆角 24px，占位文本"给 Gemini 发消息"（48px pill, centered, border-radius 24px, placeholder "Message Gemini"） | 输入框失焦 + 为空 → 100ms 后折叠（Input loses focus + empty → collapses after 100ms）                              |
+| 展开（Expanded）            | 恢复原始输入框（Restores original input box）                                                                                     | 点击药丸 / `Ctrl+I` / 焦点回到输入区 / 拖文件进入（Click pill / `Ctrl+I` / focus returns to input / drag file in） |
+| 手动折叠（Manual Collapse） | 同折叠态（Same as collapsed）                                                                                                     | 按 `ESC`（焦点在输入内时）（Press `ESC` (when focus is in input)）                                                 |
+
+**排除页面（Excluded Pages）**：首页 `/app`、Gems 编辑器 `/gems/create|edit` 不折叠（输入框是主交互元素）。（Homepage `/app`, Gems editor `/gems/create|edit` do not collapse (input box is the primary interaction element).）
+
+**3. 默认状态（Default State）**
+**默认禁用（Disabled by default）**。三处默认值均为 `false`：（Default is `false` in all three locations:）
+
+- `inputCollapse/index.ts:303` — storage 读取默认 `false`（storage read defaults to `false`）
+- `Popup.tsx:1017` — state 初始 `false`（state initial is `false`）
+- `SettingsBackupService.ts:99` — 备份默认 `false`（backup defaults to `false`）
+
+**启用方式（How to Enable）**：Voyager Popup → "Input Collapse Options" → 打开 "Enable Input Collapse" 开关，无需刷新页面。（Voyager Popup → "Input Collapse Options" → toggle on "Enable Input Collapse", no page refresh needed.）
+
+**4. 技术机制（Technical Mechanism）**
+
+| 层面（Aspect）                      | 实现（Implementation）                                                                                                                         |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **折叠态标记（Collapse Marker）**   | 添加 `gv-input-collapsed` 类到输入容器（Add `gv-input-collapsed` class to input container）                                                    |
+| **占位符（Placeholder）**           | 注入 `div.gv-collapse-placeholder`（聊天图标 + i18n 文本）（Inject `div.gv-collapse-placeholder` (chat icon + i18n text)）                     |
+| **隐藏原内容（Hide Original）**     | CSS `visibility:hidden; opacity:0; position:absolute`（CSS `visibility:hidden; opacity:0; position:absolute`）                                 |
+| **容器定位（Container Detection）** | 从 `rich-textarea` 向上遍历 8 层找有背景色的"视觉岛屿"（Traverse up 8 levels from `rich-textarea` to find background-colored "visual island"） |
+| **路由监听（Route Monitoring）**    | `popstate` + `MutationObserver` + pathname 比对（`popstate` + `MutationObserver` + pathname comparison）                                       |
+| **账号作用域（Account Scope）**     | 正则用 `(?:u\/\d+\/)?` 前缀处理多账号路由（Regex uses `(?:u\/\d+\/)?` prefix for multi-account routes）                                        |
+
+**5. 为什么需要这个功能（Why This Feature Is Needed）**
+Gemini 输入框默认占据底部较大空间，阅读长回复时是"死空间"。折叠后对话内容有更多可视区域，需要输入时无缝唤出——典型的"上下文聚焦"模式。（Gemini's input box occupies a large bottom area by default, creating "dead space" when reading long replies. Collapsing frees vertical space for conversation content, with seamless recall when input is needed—a classic "context focus" pattern.）
+
+**6. DeepSeek 是否需要（Whether DeepSeek Needs It）**
+不需要，原因有三：（Not needed, for three reasons:）
+
+1. **技术上是 Gemini 专用（Technically Gemini-specific）**：路由匹配 Gemini 的 `/app`、`/u/<num>/app`、`/gems/*`；DOM 选择器针对 `rich-textarea`、`.ql-editor` 等 Gemini 特有元素（Route matching targets Gemini's `/app`, `/u/<num>/app`, `/gems/*`; DOM selectors target Gemini-specific elements like `rich-textarea`, `.ql-editor`）
+2. **DeepSeek 原生无此功能（DeepSeek doesn't have this natively）**：DeepSeek 输入框固定底部，不自动折叠（DeepSeek input box is fixed at the bottom, does not auto-collapse）
+3. **对 DeepSeek 无副作用（No side effects on DeepSeek）**：Quote Reply 调用的 `expandInputCollapseIfNeeded` 在无折叠功能时是 no-op 空操作，不影响引用回复正常工作（Quote Reply's call to `expandInputCollapseIfNeeded` is a no-op when collapse is absent, not affecting quote reply functionality）
+
+**7. `/a/chat/s/` 路由澄清（`/a/chat/s/` Route Clarification）**
+该路由与 Input Collapse **无关**，属于 DeepSeek 导出适配器，用于识别 DeepSeek 侧边栏选中态（`a[href*="/a/chat/s/"]`）。（This route is **unrelated** to Input Collapse; it belongs to the DeepSeek export adapter for identifying DeepSeek sidebar selected state (`a[href*="/a/chat/s/"]`).）
+
+**8. 与 Quote Reply 的关系（Relationship with Quote Reply）**
+`expandInputCollapseIfNeeded` 是 Input Collapse 暴露的"展开保险"API，被 Quote Reply、Prompt History、Prompt Manager 等功能在插入内容前调用。如果输入框处于折叠态，必须先展开才能正确插入。在 DeepSeek 上该调用是空操作，不影响功能。（`expandInputCollapseIfNeeded` is the "expand safety" API exposed by Input Collapse, called by Quote Reply, Prompt History, Prompt Manager, etc. before inserting content. If the input is collapsed, it must be expanded first for correct insertion. On DeepSeek, this call is a no-op and does not affect functionality.）
+
+**9. 结论（Conclusion）**
+DeepSeek 不需要 Input Collapse 功能。该功能是 Gemini 专用的"阅读聚焦"增强，移植成本高（路由 + DOM + CSS 全部需要重写），收益有限（DeepSeek UI 布局不同，输入框占比问题不突出）。Quote Reply 在 DeepSeek 上已完整工作，`expandInputCollapseIfNeeded` 调用是安全的空操作。（DeepSeek does not need the Input Collapse feature. It is a Gemini-specific "reading focus" enhancement with high porting costs (route + DOM + CSS all need rewriting) and limited benefit (DeepSeek's UI layout differs, and the input box proportion issue is not prominent). Quote Reply already works completely on DeepSeek, and the `expandInputCollapseIfNeeded` call is a safe no-op.）
+
+---

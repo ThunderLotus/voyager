@@ -13,7 +13,7 @@ export const deepseekAdapter: SiteAdapter = {
   matches: ['https://chat.deepseek.com/*'],
   selectors: {
     userTurn:
-      '.d29f3d7d.ds-message, .d29f3d7d, .fbb737a4, .ds-user-message, [data-role="user"], div[class*="user-message"]',
+      '.d29f3d7d.ds-message, .fbb737a4, .ds-user-message, [data-role="user"], div[class*="user-message"]',
     assistantTurn:
       '.ds-assistant-message-main-content, .ds-markdown, ._4f9bf79, .ds-message--assistant, [data-role="assistant"]',
     composer: 'textarea, div[contenteditable="true"]',
