@@ -29,6 +29,15 @@ import {
 } from './boundedImageFetch';
 
 /**
+ * Minimum blob size (in bytes) for an image to be considered a "content image"
+ * worth bundling into a zip archive.  Images below this threshold are treated as
+ * decorative icons (logos, avatars, UI glyphs) and do not trigger zip packaging.
+ * 10 KiB is a conservative cutoff: typical favicons/logos are 1–5 KiB while
+ * screenshots and generated images are almost always > 50 KiB.
+ */
+const MIN_CONTENT_IMAGE_BYTES = 10 * 1024;
+
+/**
  * Main export service
  * Coordinates different export strategies
  */
@@ -494,10 +503,23 @@ export class ConversationExportService {
       },
     );
 
+    // Filter out decorative icons/small images that should not trigger zip packaging.
+    // Only images larger than the threshold are considered "content images" worth
+    // bundling into the zip.  If every fetched image is below the threshold the
+    // export falls back to a plain .md download with original URLs preserved.
+    const contentImages = fetchedByOrder.filter(
+      (item): item is { url: string; blob: Blob; contentType: string } =>
+        !!item && item.blob.size >= MIN_CONTENT_IMAGE_BYTES,
+    );
+
+    if (contentImages.length === 0) {
+      MarkdownFormatter.download(markdown, normalizedFilename);
+      return normalizedFilename;
+    }
+
     let index = 1;
     this.assertNotAborted(signal);
-    for (const item of fetchedByOrder) {
-      if (!item) continue;
+    for (const item of contentImages) {
       const extension = this.pickImageExtension(item.contentType, item.url);
       const fileName = `img-${String(index++).padStart(3, '0')}.${extension}`;
       const base64Payload = await this.blobToBase64Payload(item.blob);

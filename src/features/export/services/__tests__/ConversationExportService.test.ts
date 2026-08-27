@@ -565,7 +565,10 @@ describe('ConversationExportService', () => {
         },
         'fetchImageForMarkdownPackaging',
       );
-      fetchSpy.mockResolvedValue(null);
+      fetchSpy.mockResolvedValue({
+        blob: new Blob([new Uint8Array(20 * 1024)], { type: 'image/png' }),
+        contentType: 'image/png',
+      });
 
       const turnsWithImage: ChatTurn[] = [
         {
@@ -608,7 +611,7 @@ describe('ConversationExportService', () => {
           await new Promise((resolve) => setTimeout(resolve, 10));
         }
         return {
-          blob: new Blob([new TextEncoder().encode(url)], { type: 'image/png' }),
+          blob: new Blob([new Uint8Array(20 * 1024)], { type: 'image/png' }),
           contentType: 'image/png',
         };
       });
@@ -638,7 +641,7 @@ describe('ConversationExportService', () => {
         },
         'fetchImageForMarkdownPackaging',
       ).mockResolvedValue({
-        blob: new Blob(['jpeg-bytes'], { type: 'image/jpeg' }),
+        blob: new Blob([new Uint8Array(20 * 1024)], { type: 'image/jpeg' }),
         contentType: 'image/jpeg',
       });
 
@@ -667,7 +670,8 @@ describe('ConversationExportService', () => {
     });
 
     it('packages inline data images as zip assets instead of leaving base64 in markdown', async () => {
-      const dataUrl = 'data:image/png;base64,aGVsbG8=';
+      const originalContent = 'x'.repeat(16 * 1024);
+      const dataUrl = `data:image/png;base64,${btoa(originalContent)}`;
 
       const finalFilename = await (
         ConversationExportService as unknown as Record<string, (...args: unknown[]) => unknown>
@@ -686,7 +690,7 @@ describe('ConversationExportService', () => {
       expect(packagedMarkdown).toBe('![Interactive UI](assets/img-001.png)');
       expect(packagedMarkdown).not.toContain('data:image');
       expect(imageFile).not.toBeNull();
-      expect(await imageFile?.async('string')).toBe('hello');
+      expect(await imageFile?.async('string')).toBe(originalContent);
     });
 
     it('does not append -s0 to Google authuser query params', () => {
