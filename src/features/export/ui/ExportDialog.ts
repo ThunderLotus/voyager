@@ -56,7 +56,9 @@ export interface ExportDialogOptions {
     imageWidthWide: string;
     promptHeadingLabel: string;
     promptHeadingHint: string;
+    formatLabels: Record<ExportFormat, string>;
     formatDescriptions: Record<ExportFormat, string>;
+    recommended: string;
   };
 }
 
@@ -139,11 +141,14 @@ export class ExportDialog {
     formats.forEach((formatInfo) => {
       const localizedDescription =
         options.translations.formatDescriptions[formatInfo.format] || formatInfo.description;
+      const localizedLabel =
+        options.translations.formatLabels[formatInfo.format] || formatInfo.label;
 
       const option = this.createFormatOption(
-        { ...formatInfo, description: localizedDescription },
+        { ...formatInfo, label: localizedLabel, description: localizedDescription },
         options.translations.safariCmdpHint,
         options.translations.safariMarkdownHint,
+        options.translations.recommended,
       );
       formatsList.appendChild(option);
     });
@@ -324,6 +329,7 @@ export class ExportDialog {
     },
     safariCmdpHint: string,
     safariMarkdownHint: string,
+    recommendedLabel: string,
   ): HTMLElement {
     const option = document.createElement('label');
     option.className = 'gv-export-format-option';
@@ -355,7 +361,7 @@ export class ExportDialog {
     if (formatInfo.recommended) {
       const badge = document.createElement('span');
       badge.className = 'gv-export-format-badge';
-      badge.textContent = 'Recommended';
+      badge.textContent = recommendedLabel;
       labelDiv.appendChild(badge);
     }
 

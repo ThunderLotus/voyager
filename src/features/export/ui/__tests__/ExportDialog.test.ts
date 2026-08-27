@@ -32,12 +32,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -79,12 +90,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -115,12 +137,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -168,12 +201,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -217,12 +261,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -267,12 +322,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -320,12 +386,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -374,12 +451,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -433,12 +521,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -488,12 +587,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -574,12 +684,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 
@@ -635,12 +756,23 @@ describe('ExportDialog', () => {
         imageWidthWide: 'Wide',
         promptHeadingLabel: 'Use prompts as turn headings',
         promptHeadingHint: 'Put each prompt in its turn heading.',
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: 'JSON format',
           markdown: 'Markdown format',
           pdf: 'PDF format',
           image: 'Image format',
         },
+        recommended: 'Recommended',
       },
     });
 

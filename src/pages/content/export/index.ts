@@ -2948,12 +2948,19 @@ async function showExportDialog(
       imageWidthWide: t('export_image_width_wide'),
       promptHeadingLabel: t('export_markdown_prompt_heading'),
       promptHeadingHint: t('export_markdown_prompt_heading_hint'),
+      formatLabels: {
+        json: t('export_format_json_label'),
+        markdown: t('export_format_markdown_label'),
+        pdf: t('export_format_pdf_label'),
+        image: t('export_format_image_label'),
+      },
       formatDescriptions: {
         json: t('export_format_json_description'),
         markdown: t('export_format_markdown_description'),
         pdf: t('export_format_pdf_description'),
         image: t('export_format_image_description'),
       },
+      recommended: t('export_recommended'),
     },
   });
 }

@@ -444,12 +444,23 @@ function handleSaveReport(dict: Dictionaries, lang: AppLanguage): void {
         imageWidthWide: t('export_image_width_wide'),
         promptHeadingLabel: t('export_markdown_prompt_heading'),
         promptHeadingHint: t('export_markdown_prompt_heading_hint'),
+        formatLabels: {
+          json: 'JSON',
+
+          markdown: 'Markdown',
+
+          pdf: 'PDF',
+
+          image: 'Image',
+        },
+
         formatDescriptions: {
           json: t('export_format_json_description'),
           markdown: t('export_format_markdown_description'),
           pdf: t('export_format_pdf_description'),
           image: t('export_format_image_description'),
         },
+        recommended: 'Recommended',
       },
     });
   })().catch((error: unknown) => {
