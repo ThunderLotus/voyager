@@ -1799,7 +1799,13 @@ describe('DOMContentExtractor', () => {
       <message-content>
         <div class="markdown">
           <p>Tailscale 是一个基于 WireGuard 的平台。
-            <img src="https://www.google.com/s2/favicons?domain=https://tailscale.com&sz=128" alt="Image" />Tailscale+1
+            <span data-testid="webpage-citation-pill">
+              <a href="https://tailscale.com/docs/concepts/what-is-tailscale?utm_source=chatgpt.com" target="_blank" rel="noopener">
+                <img alt="" src="https://www.google.com/s2/favicons?domain=https://tailscale.com&sz=128" />
+                <span>Tailscale</span>
+                <span>+1</span>
+              </a>
+            </span>
           </p>
           <p>查看示意图 <img src="https://example.com/diagram.png" alt="Diagram" /> 了解细节。</p>
         </div>
@@ -1809,7 +1815,8 @@ describe('DOMContentExtractor', () => {
     const extracted = DOMContentExtractor.extractAssistantContent(assistant);
 
     expect(extracted.text).not.toContain('google.com/s2/favicons');
-    expect(extracted.text).toContain('Tailscale+1');
+    expect(extracted.text).toContain('[Tailscale');
+    expect(extracted.text).toContain('tailscale.com/docs/concepts/what-is-tailscale');
     expect(extracted.text).toContain('![Diagram](https://example.com/diagram.png)');
   });
 

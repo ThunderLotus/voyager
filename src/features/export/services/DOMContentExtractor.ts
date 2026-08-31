@@ -914,6 +914,25 @@ export class DOMContentExtractor {
           return;
         }
 
+        // Anchor links (e.g. ChatGPT citation pills, inline text links).
+        // Preserve the href as a Markdown link while filtering decorative
+        // images (favicons) inside the anchor via the recursive call.
+        if (el.tagName === 'A') {
+          const anchor = el as HTMLAnchorElement;
+          const href = anchor.getAttribute('href') || '';
+          if (href && href !== '#' && !href.startsWith('javascript:')) {
+            const processed = this.processInlineContent(anchor, forMarkdownTable);
+            const linkText = processed.text.trim();
+            if (linkText) {
+              if (processed.hasFormulas) hasFormulas = true;
+              htmlParts.push(`<a href="${this.escapeHtmlAttribute(href)}">${processed.html}</a>`);
+              const mdHref = href.replace(/\)/g, '\\)');
+              textParts.push(`[${linkText}](${mdHref})`);
+              return;
+            }
+          }
+        }
+
         // Line break
         if (el.tagName === 'BR') {
           htmlParts.push('<br />');
