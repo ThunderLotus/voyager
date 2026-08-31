@@ -157,4 +157,19 @@ describe('DeepSeek export adapter', () => {
     expect(extracted.text).not.toContain('收起');
     expect(extracted.text).toContain('正式回答核心内容');
   });
+
+  it('excludes decorative favicon images from assistant content', () => {
+    const assistant = document.createElement('div');
+    assistant.className = 'ds-markdown ds-assistant-message-main-content';
+    assistant.innerHTML = `
+      <img src="https://www.google.com/s2/favicons?domain=https://tailscale.com&sz=128" alt="Image" />
+      <img src="https://example.com/content-photo.png" alt="Photo" />
+      <p class="ds-markdown-paragraph">Tailscale 是一个基于 WireGuard 的平台。</p>
+    `;
+
+    const extracted = DOMContentExtractor.extractAssistantContent(assistant);
+    expect(extracted.text).not.toContain('google.com/s2/favicons');
+    expect(extracted.text).toContain('https://example.com/content-photo.png');
+    expect(extracted.hasImages).toBe(true);
+  });
 });

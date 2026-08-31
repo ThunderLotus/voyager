@@ -10,6 +10,7 @@ import {
   resolveChatGptSelectionRoles,
 } from '../chatgpt';
 import type { ExportPlatformAdapter } from './contract';
+import { isDecorativeImageUrl } from './decorativeImages';
 
 function extractTitle(): string {
   const title = document.title?.trim();
@@ -126,6 +127,7 @@ function extractAssistantImage(
   if (image.getAttribute('aria-hidden') === 'true') return true;
 
   const src = image.getAttribute('src') || image.src || '';
+  if (isDecorativeImageUrl(src)) return true;
   if (src && src !== 'about:blank' && !processedImageSrcs?.has(src)) {
     processedImageSrcs?.add(src);
     flags.hasImages = true;

@@ -5,6 +5,7 @@ import {
 import type { SiteAdapter } from '@/features/plugins/types';
 
 import type { ExportPlatformAdapter } from './contract';
+import { isDecorativeImageUrl } from './decorativeImages';
 
 function extractTitle(): string {
   // Strip trailing " - DeepSeek" like the upstream DeepSeek-Voyager metadata.
@@ -163,6 +164,7 @@ function extractAssistantImage(
   if (image.getAttribute('aria-hidden') === 'true') return true;
 
   const src = image.getAttribute('src') || image.src || '';
+  if (isDecorativeImageUrl(src)) return true;
   if (src && src !== 'about:blank' && !processedImageSrcs?.has(src)) {
     processedImageSrcs?.add(src);
     flags.hasImages = true;

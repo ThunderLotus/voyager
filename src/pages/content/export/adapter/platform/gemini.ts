@@ -6,6 +6,7 @@ import type { SiteAdapter } from '@/features/plugins/types';
 
 import { resolveConversationRoot } from '../../conversationDom';
 import type { ExportPlatformAdapter } from './contract';
+import { isDecorativeImageUrl } from './decorativeImages';
 
 function extractConversationId(): string | null {
   const appMatch = window.location.pathname.match(/\/app\/([^/?#]+)/);
@@ -142,6 +143,7 @@ function emitImage(
 ): void {
   const src = image.getAttribute('src') || image.src || '';
   if (!src || src === 'about:blank' || processedImageSrcs?.has(src)) return;
+  if (isDecorativeImageUrl(src)) return;
 
   processedImageSrcs?.add(src);
   flags.hasImages = true;
