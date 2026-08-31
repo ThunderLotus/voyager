@@ -1793,6 +1793,26 @@ describe('DOMContentExtractor', () => {
     expect(extracted.html).toContain('https://example.com/real.png');
   });
 
+  it('excludes inline favicon images from paragraph text while keeping real inline images', () => {
+    const assistant = document.createElement('div');
+    assistant.innerHTML = `
+      <message-content>
+        <div class="markdown">
+          <p>Tailscale 是一个基于 WireGuard 的平台。
+            <img src="https://www.google.com/s2/favicons?domain=https://tailscale.com&sz=128" alt="Image" />Tailscale+1
+          </p>
+          <p>查看示意图 <img src="https://example.com/diagram.png" alt="Diagram" /> 了解细节。</p>
+        </div>
+      </message-content>
+    `;
+
+    const extracted = DOMContentExtractor.extractAssistantContent(assistant);
+
+    expect(extracted.text).not.toContain('google.com/s2/favicons');
+    expect(extracted.text).toContain('Tailscale+1');
+    expect(extracted.text).toContain('![Diagram](https://example.com/diagram.png)');
+  });
+
   it('escapes generated image src/alt when rendered into html attributes', () => {
     const assistant = document.createElement('div');
     assistant.innerHTML = `

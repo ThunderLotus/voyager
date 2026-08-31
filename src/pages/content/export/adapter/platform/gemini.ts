@@ -2,11 +2,11 @@ import {
   DOMContentExtractor,
   type ExtractedContent,
 } from '@/features/export/services/DOMContentExtractor';
+import { isDecorativeImageUrl } from '@/features/export/services/decorativeImages';
 import type { SiteAdapter } from '@/features/plugins/types';
 
 import { resolveConversationRoot } from '../../conversationDom';
 import type { ExportPlatformAdapter } from './contract';
-import { isDecorativeImageUrl } from './decorativeImages';
 
 function extractConversationId(): string | null {
   const appMatch = window.location.pathname.match(/\/app\/([^/?#]+)/);

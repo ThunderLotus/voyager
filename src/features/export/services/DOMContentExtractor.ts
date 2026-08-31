@@ -8,6 +8,7 @@ import {
 } from '../../../pages/content/echarts/exportBridge';
 import type { ExportPlatformAdapter } from '../../../pages/content/export/adapter/platformAdapters';
 import type { ExportAttachment } from '../types/export';
+import { isDecorativeImageUrl } from './decorativeImages';
 
 export interface ExtractedContent {
   text: string;
@@ -117,7 +118,10 @@ export class DOMContentExtractor {
     };
 
     const images = this.exportAdapter.extractUserImage(element) ?? [];
-    result.hasImages = images.length > 0;
+    const contentImages = Array.from(images).filter(
+      (img) => !isDecorativeImageUrl((img as HTMLImageElement).src),
+    );
+    result.hasImages = contentImages.length > 0;
 
     const attachments = this.extractUserAttachments(element);
     result.attachments = attachments;
@@ -136,7 +140,7 @@ export class DOMContentExtractor {
 
     // Add image markdown
     const imageMarkdown: string[] = [];
-    images.forEach((img, index) => {
+    contentImages.forEach((img, index) => {
       const src = (img as HTMLImageElement).src;
       const alt = (img as HTMLImageElement).alt || `Uploaded image ${index + 1}`;
       htmlParts.push(
@@ -899,7 +903,7 @@ export class DOMContentExtractor {
         if (el.tagName === 'IMG') {
           const imgEl = el as HTMLImageElement;
           const src = imgEl.src || imgEl.getAttribute('src') || '';
-          if (src && src !== 'about:blank') {
+          if (src && src !== 'about:blank' && !isDecorativeImageUrl(src)) {
             const alt = imgEl.alt || 'Image';
             htmlParts.push(
               `<img src="${this.escapeHtmlAttribute(src)}" alt="${this.escapeHtmlAttribute(alt)}" />`,

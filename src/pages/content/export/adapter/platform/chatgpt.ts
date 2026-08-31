@@ -2,6 +2,7 @@ import {
   DOMContentExtractor,
   type ExtractedContent,
 } from '@/features/export/services/DOMContentExtractor';
+import { isDecorativeImageUrl } from '@/features/export/services/decorativeImages';
 import type { SiteAdapter } from '@/features/plugins/types';
 
 import {
@@ -10,7 +11,6 @@ import {
   resolveChatGptSelectionRoles,
 } from '../chatgpt';
 import type { ExportPlatformAdapter } from './contract';
-import { isDecorativeImageUrl } from './decorativeImages';
 
 function extractTitle(): string {
   const title = document.title?.trim();

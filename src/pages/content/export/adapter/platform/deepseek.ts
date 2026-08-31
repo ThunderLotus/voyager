@@ -2,10 +2,10 @@ import {
   DOMContentExtractor,
   type ExtractedContent,
 } from '@/features/export/services/DOMContentExtractor';
+import { isDecorativeImageUrl } from '@/features/export/services/decorativeImages';
 import type { SiteAdapter } from '@/features/plugins/types';
 
 import type { ExportPlatformAdapter } from './contract';
-import { isDecorativeImageUrl } from './decorativeImages';
 
 function extractTitle(): string {
   // Strip trailing " - DeepSeek" like the upstream DeepSeek-Voyager metadata.
